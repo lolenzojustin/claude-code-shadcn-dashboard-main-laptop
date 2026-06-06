@@ -1,0 +1,1 @@
+Tạo một feature mới trong dự án Next.js + Firebase Firestore dựa theo SKILL.md. Hỏi người dùng các tham số: tên feature, danh sách fields, fields bắt buộc, fields search/sort. Sau đó tạo đầy đủ cấu trúc feature theo đúng conventions trong skill.
