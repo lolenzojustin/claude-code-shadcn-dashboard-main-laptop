@@ -81,7 +81,7 @@ export function DataTable<TData, TValue>({
         isSeedingCustomers={isSeedingCustomers}
       />
       <div className="rounded-md border">
-        <Table className="table-fixed">
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

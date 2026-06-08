@@ -46,9 +46,9 @@ export function getCustomerColumns({
     {
       accessorKey: "id",
       header: "ID",
-      size: 190,
+      size: 140,
       cell: ({ row }) => (
-        <span className="font-mono text-xs text-muted-foreground">
+        <span className="font-mono text-xs text-muted-foreground block overflow-hidden text-ellipsis whitespace-nowrap">
           {row.getValue("id")}
         </span>
       ),
@@ -57,9 +57,9 @@ export function getCustomerColumns({
     {
       accessorKey: "fullName",
       header: "Full Name",
-      size: 220,
+      size: 160,
       cell: ({ row }) => (
-        <span className="font-medium text-sm">
+        <span className="font-medium text-sm block overflow-hidden text-ellipsis whitespace-nowrap">
           {row.getValue("fullName")}
         </span>
       ),
@@ -67,9 +67,9 @@ export function getCustomerColumns({
     {
       accessorKey: "email",
       header: "Email",
-      size: 280,
+      size: 200,
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground block overflow-hidden text-ellipsis whitespace-nowrap">
           {row.getValue("email")}
         </span>
       ),
@@ -77,15 +77,17 @@ export function getCustomerColumns({
     {
       accessorKey: "phoneNumber",
       header: "Phone",
-      size: 140,
+      size: 110,
       cell: ({ row }) => (
-        <span className="text-sm">{row.getValue("phoneNumber")}</span>
+        <span className="text-sm block overflow-hidden text-ellipsis whitespace-nowrap">
+          {row.getValue("phoneNumber")}
+        </span>
       ),
     },
     {
       accessorKey: "service",
       header: "Service",
-      size: 160,
+      size: 120,
       cell: ({ row }) => {
         const service = services.find(
           (s) => s.value === row.getValue("service")
