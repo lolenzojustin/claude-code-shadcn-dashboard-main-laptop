@@ -46,51 +46,52 @@ export function getCustomerColumns({
     {
       accessorKey: "id",
       header: "ID",
+      size: 190,
       cell: ({ row }) => (
-        <div className="w-[100px] font-medium text-sm">
+        <span className="font-mono text-xs text-muted-foreground">
           {row.getValue("id")}
-        </div>
+        </span>
       ),
       enableHiding: false,
     },
     {
       accessorKey: "fullName",
       header: "Full Name",
+      size: 220,
       cell: ({ row }) => (
-        <div className="max-w-[200px] truncate font-medium">
+        <span className="font-medium text-sm">
           {row.getValue("fullName")}
-        </div>
+        </span>
       ),
     },
     {
       accessorKey: "email",
       header: "Email",
+      size: 280,
       cell: ({ row }) => (
-        <div className="max-w-[220px] truncate text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           {row.getValue("email")}
-        </div>
+        </span>
       ),
     },
     {
       accessorKey: "phoneNumber",
       header: "Phone",
+      size: 140,
       cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("phoneNumber")}</div>
+        <span className="text-sm">{row.getValue("phoneNumber")}</span>
       ),
     },
     {
       accessorKey: "service",
       header: "Service",
+      size: 160,
       cell: ({ row }) => {
         const service = services.find(
           (s) => s.value === row.getValue("service")
         )
         if (!service) return null
-        return (
-          <div className="w-[130px]">
-            <Badge variant="outline">{service.label}</Badge>
-          </div>
-        )
+        return <Badge variant="outline">{service.label}</Badge>
       },
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))
