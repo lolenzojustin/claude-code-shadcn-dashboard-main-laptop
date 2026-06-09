@@ -8,6 +8,15 @@ const customerBodySchema = z.object({
   serviceName: z.string().min(1, "Service is required"),
 })
 
+// Convert plain object to Firestore document format
+function toFirestoreDocument(data: Record<string, unknown>) {
+  const fields: Record<string, { stringValue: string }> = {}
+  for (const [key, value] of Object.entries(data)) {
+    fields[key] = { stringValue: String(value ?? "") }
+  }
+  return { fields }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -26,20 +35,20 @@ export async function POST(request: NextRequest) {
 
     if (!apiKey || !projectId) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Firebase configuration missing",
-        },
+        { success: false, message: "Firebase configuration missing" },
         { status: 500 }
       )
     }
 
     const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/customers/${customerId}?key=${apiKey}`
 
+    // Firestore REST API requires { fields: { ... } } format
+    const firestoreDoc = toFirestoreDocument(customer)
+
     const response = await fetch(url, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(customer),
+      body: JSON.stringify(firestoreDoc),
     })
 
     if (!response.ok) {
