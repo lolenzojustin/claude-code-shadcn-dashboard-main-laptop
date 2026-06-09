@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     }
 
-    const apiKey = process.env.FIREBASE_API_KEY
-    const projectId = process.env.FIREBASE_PROJECT_ID
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
 
     if (!apiKey || !projectId) {
       return NextResponse.json(
