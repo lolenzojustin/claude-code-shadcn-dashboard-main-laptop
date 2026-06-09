@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { getAdminDb } from "@/lib/firebase/admin"
 
 const customerBodySchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -22,8 +21,35 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     }
 
-    const db = getAdminDb()
-    await db.collection("customers").doc(customerId).set(customer)
+    const apiKey = process.env.FIREBASE_API_KEY
+    const projectId = process.env.FIREBASE_PROJECT_ID
+
+    if (!apiKey || !projectId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Firebase configuration missing",
+        },
+        { status: 500 }
+      )
+    }
+
+    const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/customers/${customerId}?key=${apiKey}`
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(customer),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("Firestore error:", errorText)
+      return NextResponse.json(
+        { success: false, message: "Failed to save to Firestore" },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json(
       {
