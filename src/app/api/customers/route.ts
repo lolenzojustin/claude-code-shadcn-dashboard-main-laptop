@@ -1,23 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { doc, setDoc, serverTimestamp } from "firebase/firestore"
-import { initializeApp, getApps, getApp } from "firebase/app"
-import { getFirestore } from "firebase/firestore"
-
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-}
-
-function getDb() {
-  const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
-  return getFirestore(app)
-}
+import { getAdminDb } from "@/lib/firebase/admin"
 
 const customerBodySchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -36,21 +19,17 @@ export async function POST(request: NextRequest) {
     const customer = {
       id: customerId,
       ...validatedData,
-      createdAt: serverTimestamp(),
+      createdAt: new Date().toISOString(),
     }
 
-    const db = getDb()
-    await setDoc(doc(db, "customers", customerId), customer)
+    const db = getAdminDb()
+    await db.collection("customers").doc(customerId).set(customer)
 
     return NextResponse.json(
       {
         success: true,
         message: "Customer created successfully",
-        data: {
-          id: customerId,
-          ...validatedData,
-          createdAt: new Date().toISOString(),
-        },
+        data: customer,
       },
       { status: 201 }
     )
@@ -75,6 +54,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         message: "Internal server error",
+        error: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     )
