@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+}
+
 const customerBodySchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email address"),
@@ -8,13 +14,16 @@ const customerBodySchema = z.object({
   serviceName: z.string().min(1, "Service is required"),
 })
 
-// Convert plain object to Firestore document format
 function toFirestoreDocument(data: Record<string, unknown>) {
   const fields: Record<string, { stringValue: string }> = {}
   for (const [key, value] of Object.entries(data)) {
     fields[key] = { stringValue: String(value ?? "") }
   }
   return { fields }
+}
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
 }
 
 export async function POST(request: NextRequest) {
@@ -36,13 +45,12 @@ export async function POST(request: NextRequest) {
     if (!apiKey || !projectId) {
       return NextResponse.json(
         { success: false, message: "Firebase configuration missing" },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       )
     }
 
     const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/customers/${customerId}?key=${apiKey}`
 
-    // Firestore REST API requires { fields: { ... } } format
     const firestoreDoc = toFirestoreDocument(customer)
 
     const response = await fetch(url, {
@@ -60,7 +68,7 @@ export async function POST(request: NextRequest) {
           message: "Failed to save to Firestore",
           firestoreError: errorText,
         },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       )
     }
 
@@ -70,7 +78,7 @@ export async function POST(request: NextRequest) {
         message: "Customer created successfully",
         data: customer,
       },
-      { status: 201 }
+      { status: 201, headers: corsHeaders }
     )
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -83,7 +91,7 @@ export async function POST(request: NextRequest) {
             message: issue.message,
           })),
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
 
@@ -95,7 +103,7 @@ export async function POST(request: NextRequest) {
         message: "Internal server error",
         error: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }
