@@ -14,6 +14,56 @@ const customerBodySchema = z.object({
   serviceName: z.string().min(1, "Service is required"),
 })
 
+async function sendTelegramMessage(customer: {
+  id: string
+  fullName: string
+  email: string
+  phoneNumber: string
+  serviceName: string
+  createdAt: string
+}) {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN
+  const chatId = process.env.TELEGRAM_CHAT_ID
+
+  if (!botToken || !chatId) {
+    console.warn("Telegram bot token or chat ID not configured")
+    return
+  }
+
+  const message = [
+    "📋 *New Customer Created*",
+    "",
+    `🆔 ID: \`${customer.id}\``,
+    `👤 Name: ${customer.fullName}`,
+    `📧 Email: ${customer.email}`,
+    `📞 Phone: ${customer.phoneNumber}`,
+    `🛠️ Service: ${customer.serviceName}`,
+    "",
+    `🕐 Created: ${new Date(customer.createdAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}`,
+  ].join("\n")
+
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage`
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: "Markdown",
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("Telegram error:", errorText)
+    }
+  } catch (err) {
+    console.error("Failed to send Telegram message:", err)
+  }
+}
+
 function toFirestoreDocument(data: Record<string, unknown>) {
   const fields: Record<string, { stringValue: string }> = {}
   for (const [key, value] of Object.entries(data)) {
@@ -71,6 +121,8 @@ export async function POST(request: NextRequest) {
         { status: 500, headers: corsHeaders }
       )
     }
+
+    await sendTelegramMessage(customer)
 
     return NextResponse.json(
       {
