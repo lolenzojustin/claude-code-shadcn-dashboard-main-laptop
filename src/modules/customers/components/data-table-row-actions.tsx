@@ -76,7 +76,7 @@ export function DataTableRowActions<TData>({
 
   async function handleSaveEdit() {
     if (!draft) return
-    if (!draft.fullName.trim() || !draft.email.trim() || !draft.phoneNumber.trim() || !draft.service) {
+    if (!draft.fullName.trim() || !draft.email.trim() || !draft.phoneNumber.trim() || !draft.serviceName) {
       setError("All fields are required")
       return
     }
@@ -188,10 +188,10 @@ export function DataTableRowActions<TData>({
               <div className="space-y-2">
                 <Label htmlFor="edit-service">Service</Label>
                 <Select
-                  value={draft.service}
+                  value={draft.serviceName}
                   onValueChange={(value) =>
                     setDraft((curr) =>
-                      curr ? { ...curr, service: value } : curr
+                      curr ? { ...curr, serviceName: value } : curr
                     )
                   }
                 >

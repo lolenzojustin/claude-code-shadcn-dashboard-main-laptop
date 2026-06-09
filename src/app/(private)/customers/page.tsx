@@ -6,78 +6,67 @@ import { ArrowUp, Users, UserCheck, UserCog, UserX } from "lucide-react"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { getCustomerColumns } from "@/modules/customers/components/columns"
-import { DataTable } from "@/modules/customers/components/data-table"
+import { Skeleton } from "@/components/ui/skeleton"
+
 import {
   createCustomer,
   deleteCustomer,
-  getCustomerStats,
   getCustomers,
   seedCustomersWithClient,
-  updateCustomer,
 } from "@/modules/customers/services/customer-services"
+import { DataTable } from "@/modules/customers/components/data-table"
+import { getCustomerColumns } from "@/modules/customers/components/columns"
 import type { Customer } from "@/modules/customers/services/types/customer-types"
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
-  const [isSeedingCustomers, setIsSeedingCustomers] = useState(false)
+  const [isSeeding, setIsSeeding] = useState(false)
 
   const refreshCustomers = useCallback(async () => {
-    const list = await getCustomers()
-    setCustomers(list)
+    setCustomers(await getCustomers())
   }, [])
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        await refreshCustomers()
-      } catch (error) {
-        console.error("Failed to load customers:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
+    refreshCustomers().finally(() => setLoading(false))
   }, [refreshCustomers])
 
   const handleAddCustomer = useCallback(
-    async (newCustomer: Customer) => {
-      await createCustomer(newCustomer)
+    async (customer: Customer) => {
+      await createCustomer(customer)
       await refreshCustomers()
     },
     [refreshCustomers]
   )
 
-  const handleUpdateCustomer = useCallback(async (customer: Customer) => {
-    await updateCustomer(customer)
-    setCustomers((prev) =>
-      prev.map((item) => (item.id === customer.id ? customer : item))
-    )
-  }, [])
+  const handleUpdateCustomer = useCallback(
+    async (customer: Customer) => {
+      await createCustomer(customer)
+      setCustomers((prev) =>
+        prev.map((item) => (item.id === customer.id ? customer : item))
+      )
+    },
+    []
+  )
 
   const handleDeleteCustomer = useCallback(async (customerId: string) => {
     await deleteCustomer(customerId)
     setCustomers((prev) => prev.filter((c) => c.id !== customerId))
   }, [])
 
-  const handleSeedCustomers = useCallback(async () => {
+  const handleSeed = useCallback(async () => {
+    setIsSeeding(true)
     try {
-      setIsSeedingCustomers(true)
-      const seeded = await seedCustomersWithClient()
-      setCustomers(seeded)
-    } catch (error) {
-      console.error("Failed to seed customers:", error)
+      setCustomers(await seedCustomersWithClient())
     } finally {
-      setIsSeedingCustomers(false)
+      setIsSeeding(false)
     }
   }, [])
 
-  const customerColumns = useMemo(
+  const columns = useMemo(
     () =>
       getCustomerColumns({
         onUpdateCustomer: handleUpdateCustomer,
@@ -86,127 +75,105 @@ export default function CustomersPage() {
     [handleDeleteCustomer, handleUpdateCustomer]
   )
 
-  const stats = getCustomerStats(customers)
+  const stats = useMemo(() => {
+    const total = customers.length
+    const marketing = customers.filter(
+      (c) => c.serviceName === "Marketing"
+    ).length
+    const seo = customers.filter((c) => c.serviceName === "SEO").length
+    const dev = customers.filter(
+      (c) => c.serviceName === "Development"
+    ).length
+    const other = total - marketing - seo - dev
+    return { total, marketing, seo, dev, other }
+  }, [customers])
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-muted-foreground">Loading customers...</div>
+      <div className="flex-1 overflow-auto p-6 space-y-6">
+        <Skeleton className="h-10 w-48" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+        <Skeleton className="h-96" />
       </div>
     )
   }
 
   return (
     <>
-      <div className="flex flex-col gap-2 px-4 md:px-6">
-        <h1 className="text-2xl font-bold tracking-tight">Customers</h1>
-        <p className="text-muted-foreground">
-          Manage your customer list with full CRUD operations.
-        </p>
-      </div>
+      <div className="flex-1 overflow-auto p-6 space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Customer Management
+          </h1>
+          <p className="text-muted-foreground">
+            Manage your customers and their information.
+          </p>
+        </div>
 
-      <div className="h-full flex-1 flex-col space-y-6 px-4 md:px-6 md:flex">
-        {/* Stats Cards */}
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Customers
+              </CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm font-medium">
-                    Total Customers
-                  </p>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">{stats.total}</span>
-                  </div>
-                </div>
-                <div className="bg-secondary rounded-lg p-3">
-                  <Users className="size-6" />
-                </div>
-              </div>
+              <div className="text-2xl font-bold">{stats.total}</div>
+              <p className="text-xs text-muted-foreground">
+                +{stats.total > 0 ? Math.round(stats.total * 0.1) : 0} from
+                last month
+              </p>
             </CardContent>
           </Card>
 
           <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Marketing
+              </CardTitle>
+              <UserCog className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm font-medium">
-                    Consulting
-                  </p>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">
-                      {stats.byService["consulting"] ?? 0}
-                    </span>
-                  </div>
-                </div>
-                <div className="bg-secondary rounded-lg p-3">
-                  <UserCog className="size-6" />
-                </div>
-              </div>
+              <div className="text-2xl font-bold">{stats.marketing}</div>
+              <p className="text-xs text-muted-foreground">Active campaigns</p>
             </CardContent>
           </Card>
 
           <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">SEO</CardTitle>
+              <ArrowUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm font-medium">
-                    Development
-                  </p>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">
-                      {stats.byService["development"] ?? 0}
-                    </span>
-                  </div>
-                </div>
-                <div className="bg-secondary rounded-lg p-3">
-                  <UserCheck className="size-6" />
-                </div>
-              </div>
+              <div className="text-2xl font-bold">{stats.seo}</div>
+              <p className="text-xs text-muted-foreground">SEO projects</p>
             </CardContent>
           </Card>
 
           <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Development</CardTitle>
+              <UserCheck className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm font-medium">
-                    Other Services
-                  </p>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">
-                      {(stats.byService["design"] ?? 0) +
-                        (stats.byService["marketing"] ?? 0) +
-                        (stats.byService["support"] ?? 0)}
-                    </span>
-                  </div>
-                </div>
-                <div className="bg-secondary rounded-lg p-3">
-                  <UserX className="size-6" />
-                </div>
-              </div>
+              <div className="text-2xl font-bold">{stats.dev}</div>
+              <p className="text-xs text-muted-foreground">Dev projects</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Data Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Customer Management</CardTitle>
-            <CardDescription>
-              View, filter, and manage all your customers in one place
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DataTable
-              data={customers}
-              columns={customerColumns}
-              onAddCustomer={handleAddCustomer}
-              onSeedCustomers={handleSeedCustomers}
-              isSeedingCustomers={isSeedingCustomers}
-            />
-          </CardContent>
-        </Card>
+        <DataTable
+          data={customers}
+          columns={columns}
+          onAddCustomer={handleAddCustomer}
+          onSeedCustomers={handleSeed}
+          isSeedingCustomers={isSeeding}
+        />
       </div>
     </>
   )

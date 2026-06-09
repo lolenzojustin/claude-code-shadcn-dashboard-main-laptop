@@ -57,16 +57,16 @@ export function getCustomerStats(customers: Customer[]) {
   return {
     total: customers.length,
     byService: services.reduce((acc, svc) => {
-      acc[svc.value] = customers.filter((c) => c.service === svc.value).length
+      acc[svc.value] = customers.filter((c) => c.serviceName === svc.value).length
       return acc
     }, {} as Record<string, number>),
   }
 }
 
 const services = [
-  { value: "consulting", label: "Consulting" },
-  { value: "development", label: "Development" },
-  { value: "design", label: "Design" },
-  { value: "marketing", label: "Marketing" },
-  { value: "support", label: "Support" },
+  { value: "SEO", label: "SEO" },
+  { value: "Marketing", label: "Marketing" },
+  { value: "Development", label: "Development" },
+  { value: "Design", label: "Design" },
+  { value: "Support", label: "Support" },
 ]

@@ -5,7 +5,7 @@ export const customerSchema = z.object({
   fullName: z.string(),
   email: z.string().email(),
   phoneNumber: z.string(),
-  service: z.string(),
+  serviceName: z.string(),
 })
 
 export type Customer = z.infer<typeof customerSchema>

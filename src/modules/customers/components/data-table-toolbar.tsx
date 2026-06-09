@@ -20,7 +20,7 @@ import { AddCustomerModal } from "./add-customer-modal"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
-  onAddCustomer?: (customer: Customer) => void | Promise<void>
+  onAddCustomer?: (customer: Customer) => Promise<void>
   onSeedCustomers?: () => void | Promise<void>
   isSeedingCustomers?: boolean
 }
@@ -34,7 +34,7 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0
 
   const handleServiceChange = (value: string) => {
-    const column = table.getColumn("service")
+    const column = table.getColumn("serviceName")
     if (value === "all") {
       column?.setFilterValue(undefined)
     } else {
@@ -42,7 +42,7 @@ export function DataTableToolbar<TData>({
     }
   }
 
-  const serviceFilter = table.getColumn("service")?.getFilterValue() as
+  const serviceFilter = table.getColumn("serviceName")?.getFilterValue() as
     | string
     | undefined
 
