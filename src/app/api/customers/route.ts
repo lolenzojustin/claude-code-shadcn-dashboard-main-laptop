@@ -46,7 +46,11 @@ export async function POST(request: NextRequest) {
       const errorText = await response.text()
       console.error("Firestore error:", errorText)
       return NextResponse.json(
-        { success: false, message: "Failed to save to Firestore" },
+        {
+          success: false,
+          message: "Failed to save to Firestore",
+          firestoreError: errorText,
+        },
         { status: 500 }
       )
     }
