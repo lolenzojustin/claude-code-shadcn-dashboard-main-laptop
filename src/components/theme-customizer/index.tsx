@@ -20,43 +20,43 @@ interface ThemeCustomizerProps {
 }
 
 export function ThemeCustomizer({ open, onOpenChange }: ThemeCustomizerProps) {
-  const { applyImportedTheme, isDarkMode, resetTheme, applyRadius, setBrandColorsValues, applyTheme, applyTweakcnTheme } = useThemeManager()
+  const {
+    applyImportedTheme,
+    isDarkMode,
+    resetTheme,
+    applyRadius,
+    setBrandColorsValues,
+    applyTheme,
+    applyTweakcnTheme,
+    selectedTheme,
+    setSelectedTheme,
+    selectedTweakcnTheme,
+    setSelectedTweakcnTheme,
+    selectedRadius,
+    setSelectedRadius,
+    importedTheme,
+    setImportedTheme,
+  } = useThemeManager()
   const { config: sidebarConfig, updateConfig: updateSidebarConfig } = useSidebarConfig()
 
   const [activeTab, setActiveTab] = React.useState("theme")
-  const [selectedTheme, setSelectedTheme] = React.useState("default")
-  const [selectedTweakcnTheme, setSelectedTweakcnTheme] = React.useState("")
-  const [selectedRadius, setSelectedRadius] = React.useState("0.5rem")
   const [importModalOpen, setImportModalOpen] = React.useState(false)
-  const [importedTheme, setImportedTheme] = React.useState<ImportedTheme | null>(null)
 
   const handleReset = () => {
-    // Complete reset to application defaults
-
-    // 1. Reset all state variables to initial values
     setSelectedTheme("default")
     setSelectedTweakcnTheme("")
     setSelectedRadius("0.5rem")
-    setImportedTheme(null) // Clear imported theme
-    setBrandColorsValues({}) // Clear brand colors state
-
-    // 2. Completely remove all custom CSS variables
+    setImportedTheme(null)
+    setBrandColorsValues({})
     resetTheme()
-
-    // 3. Reset the radius to default
     applyRadius("0.5rem")
-
-    // 4. Reset sidebar to defaults
     updateSidebarConfig({ variant: "inset", collapsible: "offcanvas", side: "left" })
   }
 
   const handleImport = (themeData: ImportedTheme) => {
     setImportedTheme(themeData)
-    // Clear other selections to indicate custom import is active
     setSelectedTheme("")
     setSelectedTweakcnTheme("")
-
-    // Apply the imported theme
     applyImportedTheme(themeData, isDarkMode)
   }
 
@@ -64,7 +64,7 @@ export function ThemeCustomizer({ open, onOpenChange }: ThemeCustomizerProps) {
     setImportModalOpen(true)
   }
 
-  // Re-apply themes when theme mode changes
+  // Re-apply theme when dark/light mode changes
   React.useEffect(() => {
     if (importedTheme) {
       applyImportedTheme(importedTheme, isDarkMode)
@@ -76,7 +76,7 @@ export function ThemeCustomizer({ open, onOpenChange }: ThemeCustomizerProps) {
         applyTweakcnTheme(selectedPreset, isDarkMode)
       }
     }
-  }, [isDarkMode, importedTheme, selectedTheme, selectedTweakcnTheme, applyImportedTheme, applyTheme, applyTweakcnTheme])
+  }, [isDarkMode, selectedTheme, selectedTweakcnTheme, importedTheme])
 
   return (
     <>
@@ -132,6 +132,7 @@ export function ThemeCustomizer({ open, onOpenChange }: ThemeCustomizerProps) {
                   setSelectedTweakcnTheme={setSelectedTweakcnTheme}
                   selectedRadius={selectedRadius}
                   setSelectedRadius={setSelectedRadius}
+                  importedTheme={importedTheme}
                   setImportedTheme={setImportedTheme}
                   onImportClick={handleImportClick}
                 />

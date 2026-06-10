@@ -3,12 +3,93 @@
 import React from 'react'
 import { useTheme } from '@/hooks/use-theme'
 import { baseColors } from '@/config/theme-customizer-constants'
-import { colorThemes } from '@/config/theme-data'
+import { colorThemes, tweakcnThemes } from '@/config/theme-data'
 import type { ThemePreset, ImportedTheme } from '@/types/theme-customizer'
+
+const STORAGE_KEY = 'dashboard-theme-preset'
+
+function loadThemePreset(): {
+  selectedTheme: string
+  selectedTweakcnTheme: string
+  selectedRadius: string
+  importedTheme: ImportedTheme | null
+} {
+  if (typeof window === 'undefined') {
+    return { selectedTheme: 'default', selectedTweakcnTheme: '', selectedRadius: '0.5rem', importedTheme: null }
+  }
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) return JSON.parse(stored)
+  } catch {}
+  return { selectedTheme: 'default', selectedTweakcnTheme: '', selectedRadius: '0.5rem', importedTheme: null }
+}
+
+function saveThemePreset(data: {
+  selectedTheme: string
+  selectedTweakcnTheme: string
+  selectedRadius: string
+  importedTheme: ImportedTheme | null
+}) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch {}
+}
 
 export function useThemeManager() {
   const { theme, setTheme } = useTheme()
   const [brandColorsValues, setBrandColorsValues] = React.useState<Record<string, string>>({})
+
+  const [selectedTheme, setSelectedThemeState] = React.useState<string>('default')
+  const [selectedTweakcnTheme, setSelectedTweakcnThemeState] = React.useState<string>('')
+  const [selectedRadius, setSelectedRadiusState] = React.useState<string>('0.5rem')
+  const [importedTheme, setImportedThemeState] = React.useState<ImportedTheme | null>(null)
+
+  // Hydrate from localStorage once on mount
+  React.useEffect(() => {
+    const saved = loadThemePreset()
+    setSelectedThemeState(saved.selectedTheme)
+    setSelectedTweakcnThemeState(saved.selectedTweakcnTheme)
+    setSelectedRadiusState(saved.selectedRadius)
+    setImportedThemeState(saved.importedTheme)
+  }, [])
+
+  // Persist state changes to localStorage
+  const setSelectedTheme = React.useCallback((val: string) => {
+    setSelectedThemeState(val)
+    saveThemePreset({ selectedTheme: val, selectedTweakcnTheme, selectedRadius, importedTheme })
+  }, [selectedTweakcnTheme, selectedRadius, importedTheme])
+
+  const setSelectedTweakcnTheme = React.useCallback((val: string) => {
+    setSelectedTweakcnThemeState(val)
+    saveThemePreset({ selectedTheme, selectedTweakcnTheme: val, selectedRadius, importedTheme })
+  }, [selectedTheme, selectedRadius, importedTheme])
+
+  const setSelectedRadius = React.useCallback((val: string) => {
+    setSelectedRadiusState(val)
+    saveThemePreset({ selectedTheme, selectedTweakcnTheme, selectedRadius: val, importedTheme })
+  }, [selectedTheme, selectedTweakcnTheme, importedTheme])
+
+  const setImportedTheme = React.useCallback((val: ImportedTheme | null) => {
+    setImportedThemeState(val)
+    saveThemePreset({ selectedTheme, selectedTweakcnTheme, selectedRadius, importedTheme: val })
+  }, [selectedTheme, selectedTweakcnTheme, selectedRadius])
+
+  // Re-apply saved theme preset on mount (after hydration)
+  React.useEffect(() => {
+    const saved = loadThemePreset()
+    if (saved.selectedTheme && saved.selectedTheme !== 'default') {
+      applyTheme(saved.selectedTheme, isDarkMode)
+    } else if (saved.selectedTweakcnTheme) {
+      const preset = tweakcnThemes.find(t => t.value === saved.selectedTweakcnTheme)?.preset
+      if (preset) applyTweakcnTheme(preset, isDarkMode)
+    } else if (saved.importedTheme) {
+      applyImportedTheme(saved.importedTheme, isDarkMode)
+    }
+    if (saved.selectedRadius) {
+      applyRadius(saved.selectedRadius)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Simple, reliable theme detection - just follow the theme provider
   const isDarkMode = React.useMemo(() => {
@@ -146,6 +227,14 @@ export function useThemeManager() {
     applyImportedTheme,
     applyRadius,
     handleColorChange,
-    updateBrandColorsFromTheme
+    updateBrandColorsFromTheme,
+    selectedTheme,
+    setSelectedTheme,
+    selectedTweakcnTheme,
+    setSelectedTweakcnTheme,
+    selectedRadius,
+    setSelectedRadius,
+    importedTheme,
+    setImportedTheme,
   }
 }

@@ -12,19 +12,9 @@ import { colorThemes, tweakcnThemes } from '@/config/theme-data'
 import { radiusOptions, baseColors } from '@/config/theme-customizer-constants'
 import { ColorPicker } from '@/components/color-picker'
 import type { ImportedTheme } from '@/types/theme-customizer'
+import type { ThemeTabProps } from '@/types/theme-tab-props'
 import React from 'react'
 import "./circular-transition.css"
-
-interface ThemeTabProps {
-  selectedTheme: string
-  setSelectedTheme: (theme: string) => void
-  selectedTweakcnTheme: string
-  setSelectedTweakcnTheme: (theme: string) => void
-  selectedRadius: string
-  setSelectedRadius: (radius: string) => void
-  setImportedTheme: (theme: ImportedTheme | null) => void
-  onImportClick: () => void
-}
 
 export function ThemeTab({
   selectedTheme,
