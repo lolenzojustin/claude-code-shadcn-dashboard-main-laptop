@@ -32,6 +32,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { onAuthStateChanged } from "firebase/auth"
 import { getUserMenus } from "@/modules/rbac/services/rbac-services"
 import { auth } from "@/lib/firebase/client"
 import { MENU_KEYS } from "@/modules/rbac/services/types/rbac-types"
@@ -187,26 +188,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     avatar: session?.user?.image ?? "",
   }
 
+  // Listen to Firebase auth state — fires reliably on mount + every sign-in
   React.useEffect(() => {
-    async function loadRole() {
-      try {
-        const firebaseUser = auth.currentUser
-        const uid = firebaseUser?.uid || session?.user?.id
-        if (!uid) return
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!firebaseUser) {
+        setAllowedMenus([])
+        return
+      }
 
-        const menus = await getUserMenus(uid)
+      try {
+        const menus = await getUserMenus(firebaseUser.uid)
         setAllowedMenus(menus)
       } catch (err) {
         console.error("Failed to load user role for sidebar:", err)
       }
-    }
+    })
 
-    if (session?.user?.id || auth.currentUser) {
-      loadRole()
-    }
-  }, [session])
+    return () => unsubscribe()
+  }, [])
 
-  const filteredNavGroups = filterNavGroups(ALL_NAV_GROUPS, allowedMenus)
+  const visibleNavGroups = filterNavGroups(ALL_NAV_GROUPS, allowedMenus)
 
   return (
     <Sidebar {...props}>
@@ -229,7 +230,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         {ALL_NAV_GROUPS.map((group, idx) => {
-          const filteredItems = filteredNavGroups[idx] ?? []
+          const filteredItems = visibleNavGroups[idx] ?? []
           return (
             <NavMain
               key={group.label}
