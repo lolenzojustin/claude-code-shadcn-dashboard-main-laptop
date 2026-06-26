@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -8,7 +9,7 @@ import {
 } from "firebase/firestore"
 
 import { db } from "@/lib/firebase/client"
-import { ROLES, USER_ROLES } from "./rbac-mock-data"
+import { ROLES } from "./rbac-mock-data"
 import type { Role, UserRole } from "./types/rbac-types"
 
 const ROLES_COLLECTION = "roles"
@@ -33,6 +34,11 @@ export async function getUserRole(uid: string): Promise<UserRole | null> {
   return { uid: snap.id, ...snap.data() } as UserRole
 }
 
+export async function getAllUserRoles(): Promise<UserRole[]> {
+  const snap = await getDocs(collection(db, USER_ROLES_COLLECTION))
+  return snap.docs.map((d) => ({ uid: d.id, ...d.data() }) as UserRole)
+}
+
 export async function getUserRoleWithDetails(
   uid: string
 ): Promise<{ userRole: UserRole | null; role: Role | null }> {
@@ -42,19 +48,35 @@ export async function getUserRoleWithDetails(
   return { userRole, role }
 }
 
+// ─── Assign / Update / Delete ───────────────────────────────────────────────
+
+/**
+ * Assign (or update) a role to a Firebase user.
+ * Document ID = Firebase UID (from Authentication).
+ */
+export async function setUserRole(
+  uid: string,
+  roleId: string,
+  roleName: string
+): Promise<void> {
+  await setDoc(
+    doc(db, USER_ROLES_COLLECTION, uid),
+    { uid, roleId, roleName },
+    { merge: true }
+  )
+}
+
+export async function deleteUserRole(uid: string): Promise<void> {
+  await deleteDoc(doc(db, USER_ROLES_COLLECTION, uid))
+}
+
 // ─── Seed ────────────────────────────────────────────────────────────────────
 
-export async function seedRolesAndUserRoles(): Promise<void> {
+export async function seedRoles(): Promise<void> {
   const batch = writeBatch(db)
-
   ROLES.forEach((role) => {
     batch.set(doc(db, ROLES_COLLECTION, role.id), role, { merge: true })
   })
-
-  USER_ROLES.forEach((ur) => {
-    batch.set(doc(db, USER_ROLES_COLLECTION, ur.uid), ur, { merge: true })
-  })
-
   await batch.commit()
 }
 
