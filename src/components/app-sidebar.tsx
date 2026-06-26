@@ -10,12 +10,13 @@ import {
   CheckSquare,
   MessageCircle,
   Calendar,
-  Shield,
-  AlertTriangle,
   HelpCircle,
   CreditCard,
   Users,
   UserCog,
+  FileText,
+  Settings,
+  type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
 import { Logo } from "@/components/logo"
@@ -31,125 +32,151 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { getUserMenus } from "@/modules/rbac/services/rbac-services"
+import { auth } from "@/lib/firebase/client"
+import { MENU_KEYS } from "@/modules/rbac/services/types/rbac-types"
 
-const data = {
-  navGroups: [
-    {
-      label: "Dashboards",
-      items: [
-        {
-          title: "Dashboard 1",
-          url: "/dashboard",
-          icon: LayoutDashboard,
-        },
-        {
-          title: "Dashboard 2",
-          url: "/dashboard-2",
-          icon: LayoutPanelLeft,
-        },
-      ],
-    },
-    {
-      label: "Apps",
-      items: [
-        {
-          title: "Mail",
-          url: "/mail",
-          icon: Mail,
-        },
-        {
-          title: "Tasks",
-          url: "/tasks",
-          icon: CheckSquare,
-        },
-        {
-          title: "Chat",
-          url: "/chat",
-          icon: MessageCircle,
-        },
-        {
-          title: "Calendar",
-          url: "/calendar",
-          icon: Calendar,
-        },
-        {
-          title: "Users",
-          url: "/users",
-          icon: Users,
-        },
-        {
-          title: "Customers",
-          url: "/customers",
-          icon: UserCog,
-        },
-      ],
-    },
-    {
-      label: "Pages",
-      items: [
-        {
-          title: "Auth Pages",
-          url: "#",
-          icon: Shield,
-          items: [
-            {
-              title: "Sign In",
-              url: "/sign-in",
-            },
-            {
-              title: "Sign Up",
-              url: "/sign-up",
-            },
-            {
-              title: "Forgot Password",
-              url: "/forgot-password",
-            },
-          ],
-        },
-        {
-          title: "Errors",
-          url: "#",
-          icon: AlertTriangle,
-          items: [
-            {
-              title: "Unauthorized",
-              url: "/errors/unauthorized",
-            },
-            {
-              title: "Forbidden",
-              url: "/errors/forbidden",
-            },
-            {
-              title: "Not Found",
-              url: "/errors/not-found",
-            },
-            {
-              title: "Internal Server Error",
-              url: "/errors/internal-server-error",
-            },
-            {
-              title: "Under Maintenance",
-              url: "/errors/under-maintenance",
-            },
-          ],
-        },
-        {
-          title: "FAQs",
-          url: "/faqs",
-          icon: HelpCircle,
-        },
-        {
-          title: "Pricing",
-          url: "/pricing",
-          icon: CreditCard,
-        },
-      ],
-    },
-  ],
+interface NavMenuItem {
+  title: string
+  url: string
+  icon?: LucideIcon
+  menuKey?: string
+  items?: NavMenuItem[]
+}
+
+interface NavGroup {
+  label: string
+  items: NavMenuItem[]
+}
+
+const ALL_NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Dashboards",
+    items: [
+      {
+        title: "Dashboard 1",
+        url: "/dashboard",
+        icon: LayoutDashboard,
+        menuKey: MENU_KEYS.DASHBOARD,
+      },
+      {
+        title: "Dashboard 2",
+        url: "/dashboard-2",
+        icon: LayoutPanelLeft,
+        menuKey: MENU_KEYS.DASHBOARD_2,
+      },
+      {
+        title: "Dashboard 3",
+        url: "/dashboard-3",
+        icon: Megaphone,
+        menuKey: MENU_KEYS.DASHBOARD_3,
+      },
+    ],
+  },
+  {
+    label: "Management",
+    items: [
+      {
+        title: "Tasks",
+        url: "/tasks",
+        icon: CheckSquare,
+        menuKey: MENU_KEYS.TASKS,
+      },
+      {
+        title: "Users",
+        url: "/users",
+        icon: Users,
+        menuKey: MENU_KEYS.USERS,
+      },
+      {
+        title: "Customers",
+        url: "/customers",
+        icon: UserCog,
+        menuKey: MENU_KEYS.CUSTOMERS,
+      },
+      {
+        title: "Mail",
+        url: "/mail",
+        icon: Mail,
+        menuKey: MENU_KEYS.MAIL,
+      },
+      {
+        title: "Calendar",
+        url: "/calendar",
+        icon: Calendar,
+        menuKey: MENU_KEYS.CALENDAR,
+      },
+    ],
+  },
+  {
+    label: "Documents",
+    items: [
+      {
+        title: "ISO Documents",
+        url: "/iso-documents",
+        icon: FileText,
+        menuKey: MENU_KEYS.ISO_DOCUMENTS,
+      },
+    ],
+  },
+  {
+    label: "Chat",
+    items: [
+      {
+        title: "Chat",
+        url: "/chat",
+        icon: MessageCircle,
+        menuKey: MENU_KEYS.CHAT,
+      },
+    ],
+  },
+  {
+    label: "Pages",
+    items: [
+      {
+        title: "Settings",
+        url: "/settings/user",
+        icon: Settings,
+        menuKey: MENU_KEYS.SETTINGS,
+      },
+      {
+        title: "FAQs",
+        url: "/faqs",
+        icon: HelpCircle,
+        menuKey: MENU_KEYS.FAQs,
+      },
+      {
+        title: "Pricing",
+        url: "/pricing",
+        icon: CreditCard,
+        menuKey: MENU_KEYS.PRICING,
+      },
+    ],
+  },
+]
+
+function filterNavGroups(
+  groups: NavGroup[],
+  allowedMenus: string[]
+): Parameters<typeof NavMain>[0]["items"][] {
+  return groups
+    .map((group) => {
+      const filteredItems: Parameters<typeof NavMain>[0]["items"] = []
+      for (const item of group.items) {
+        if (item.menuKey && !allowedMenus.includes(item.menuKey)) continue
+        const filteredSubItems = item.items?.filter(
+          (sub) => !sub.menuKey || allowedMenus.includes(sub.menuKey)
+        )
+        filteredItems.push({ ...item, items: filteredSubItems })
+      }
+      return filteredItems
+    })
+    .filter((items) => items.length > 0)
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session, status } = useSession()
+  const [allowedMenus, setAllowedMenus] = React.useState<string[]>([])
 
   const user = {
     name:
@@ -159,6 +186,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     email: session?.user?.email ?? "",
     avatar: session?.user?.image ?? "",
   }
+
+  React.useEffect(() => {
+    async function loadRole() {
+      try {
+        const firebaseUser = auth.currentUser
+        const uid = firebaseUser?.uid || session?.user?.id
+        if (!uid) return
+
+        const menus = await getUserMenus(uid)
+        setAllowedMenus(menus)
+      } catch (err) {
+        console.error("Failed to load user role for sidebar:", err)
+      }
+    }
+
+    if (session?.user?.id || auth.currentUser) {
+      loadRole()
+    }
+  }, [session])
+
+  const filteredNavGroups = filterNavGroups(ALL_NAV_GROUPS, allowedMenus)
 
   return (
     <Sidebar {...props}>
@@ -180,9 +228,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {data.navGroups.map((group) => (
-          <NavMain key={group.label} label={group.label} items={group.items} />
-        ))}
+        {ALL_NAV_GROUPS.map((group, idx) => {
+          const filteredItems = filteredNavGroups[idx] ?? []
+          return (
+            <NavMain
+              key={group.label}
+              label={group.label}
+              items={filteredItems}
+            />
+          )
+        })}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
