@@ -19,12 +19,14 @@ interface TaskColumnActions {
   onUpdateTask?: (task: Task) => void | Promise<void>
   onDeleteTask?: (taskId: string) => void | Promise<void>
   onDuplicateTask?: (task: Task) => void | Promise<void>
+  currentUserUid?: string
 }
 
 export function getTaskColumns({
   onUpdateTask,
   onDeleteTask,
   onDuplicateTask,
+  currentUserUid,
 }: TaskColumnActions = {}): ColumnDef<Task>[] {
   return [
     {
@@ -174,6 +176,7 @@ export function getTaskColumns({
           onUpdateTask={onUpdateTask}
           onDeleteTask={onDeleteTask}
           onDuplicateTask={onDuplicateTask}
+          currentUserUid={currentUserUid}
         />
       ),
     },

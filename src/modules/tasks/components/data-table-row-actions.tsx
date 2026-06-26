@@ -45,6 +45,7 @@ interface DataTableRowActionsProps<TData> {
   onUpdateTask?: (task: Task) => void | Promise<void>
   onDeleteTask?: (taskId: string) => void | Promise<void>
   onDuplicateTask?: (task: Task) => void | Promise<void>
+  currentUserUid?: string
 }
 
 export function DataTableRowActions<TData>({
@@ -52,6 +53,7 @@ export function DataTableRowActions<TData>({
   onUpdateTask,
   onDeleteTask,
   onDuplicateTask,
+  currentUserUid,
 }: DataTableRowActionsProps<TData>) {
   const parsed = taskSchema.safeParse(row.original)
   const [editOpen, setEditOpen] = React.useState(false)
@@ -64,6 +66,7 @@ export function DataTableRowActions<TData>({
   }
 
   const task = parsed.data
+  const isOwner = task.createdBy != null && task.createdBy === currentUserUid
 
   function openEditDialog() {
     setDraft(task)
@@ -104,26 +107,35 @@ export function DataTableRowActions<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          <DropdownMenuItem className="cursor-pointer" onClick={openEditDialog}>
-            Edit Task
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => onDuplicateTask?.(task)}
-          >
-            Duplicate
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="cursor-pointer"
-            variant="destructive"
-            onClick={() => onDeleteTask?.(task.id)}
-          >
-            Delete
-            <DropdownMenuShortcut className="text-destructive">
-              ⌘⌫
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {isOwner && (
+            <>
+              <DropdownMenuItem className="cursor-pointer" onClick={openEditDialog}>
+                Edit Task
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => onDuplicateTask?.(task)}
+              >
+                Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                variant="destructive"
+                onClick={() => onDeleteTask?.(task.id)}
+              >
+                Delete
+                <DropdownMenuShortcut className="text-destructive">
+                  ⌘⌫
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </>
+          )}
+          {!isOwner && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => onDuplicateTask?.(task)}>
+              Duplicate
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

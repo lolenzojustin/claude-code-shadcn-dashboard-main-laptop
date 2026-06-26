@@ -35,6 +35,7 @@ interface DataTableProps<TData, TValue> {
   onAddTask?: (task: Task) => void | Promise<void>
   onSeedTasks?: () => void | Promise<void>
   isSeedingTasks?: boolean
+  currentUserUid?: string
 }
 
 export function DataTable<TData, TValue>({
@@ -43,6 +44,7 @@ export function DataTable<TData, TValue>({
   onAddTask,
   onSeedTasks,
   isSeedingTasks,
+  currentUserUid,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -81,6 +83,7 @@ export function DataTable<TData, TValue>({
         onAddTask={onAddTask}
         onSeedTasks={onSeedTasks}
         isSeedingTasks={isSeedingTasks}
+        currentUserUid={currentUserUid}
       />
       <div className="rounded-md border">
         <Table>

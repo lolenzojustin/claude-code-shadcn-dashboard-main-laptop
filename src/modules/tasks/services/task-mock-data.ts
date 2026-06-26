@@ -80,6 +80,9 @@ export const priorities = [
   },
 ]
 
+const MOCK_UID_A = "user-a-001"
+const MOCK_UID_B = "user-b-002"
+
 const tasksData = [
   {
     id: "TASK-1001",
@@ -87,6 +90,7 @@ const tasksData = [
     status: "completed",
     category: "feature",
     priority: "critical",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1002",
@@ -94,6 +98,7 @@ const tasksData = [
     status: "in progress",
     category: "bug",
     priority: "critical",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1003",
@@ -101,6 +106,7 @@ const tasksData = [
     status: "todo",
     category: "documentation",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1004",
@@ -108,6 +114,7 @@ const tasksData = [
     status: "completed",
     category: "feature",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1005",
@@ -115,6 +122,7 @@ const tasksData = [
     status: "in progress",
     category: "bug",
     priority: "critical",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1006",
@@ -122,6 +130,7 @@ const tasksData = [
     status: "pending",
     category: "documentation",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1007",
@@ -129,6 +138,7 @@ const tasksData = [
     status: "todo",
     category: "improvement",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1008",
@@ -136,6 +146,7 @@ const tasksData = [
     status: "pending",
     category: "refactor",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1009",
@@ -143,6 +154,7 @@ const tasksData = [
     status: "in progress",
     category: "bug",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1010",
@@ -150,6 +162,7 @@ const tasksData = [
     status: "todo",
     category: "feature",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1011",
@@ -157,6 +170,7 @@ const tasksData = [
     status: "pending",
     category: "improvement",
     priority: "critical",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1012",
@@ -164,6 +178,7 @@ const tasksData = [
     status: "completed",
     category: "documentation",
     priority: "minor",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1013",
@@ -171,6 +186,7 @@ const tasksData = [
     status: "in progress",
     category: "feature",
     priority: "normal",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1014",
@@ -178,6 +194,7 @@ const tasksData = [
     status: "todo",
     category: "bug",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1015",
@@ -185,6 +202,7 @@ const tasksData = [
     status: "pending",
     category: "refactor",
     priority: "critical",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1016",
@@ -192,6 +210,7 @@ const tasksData = [
     status: "completed",
     category: "feature",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1017",
@@ -199,6 +218,7 @@ const tasksData = [
     status: "todo",
     category: "documentation",
     priority: "normal",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1018",
@@ -206,6 +226,7 @@ const tasksData = [
     status: "completed",
     category: "bug",
     priority: "minor",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1019",
@@ -213,6 +234,7 @@ const tasksData = [
     status: "in progress",
     category: "improvement",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1020",
@@ -220,6 +242,7 @@ const tasksData = [
     status: "pending",
     category: "feature",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1021",
@@ -227,6 +250,7 @@ const tasksData = [
     status: "todo",
     category: "bug",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1022",
@@ -234,6 +258,7 @@ const tasksData = [
     status: "pending",
     category: "documentation",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1023",
@@ -241,6 +266,7 @@ const tasksData = [
     status: "todo",
     category: "refactor",
     priority: "normal",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1024",
@@ -248,6 +274,7 @@ const tasksData = [
     status: "completed",
     category: "feature",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1025",
@@ -255,6 +282,7 @@ const tasksData = [
     status: "in progress",
     category: "bug",
     priority: "critical",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1026",
@@ -262,6 +290,7 @@ const tasksData = [
     status: "todo",
     category: "improvement",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1027",
@@ -269,6 +298,7 @@ const tasksData = [
     status: "completed",
     category: "documentation",
     priority: "minor",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1028",
@@ -276,6 +306,7 @@ const tasksData = [
     status: "pending",
     category: "feature",
     priority: "critical",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1029",
@@ -283,6 +314,7 @@ const tasksData = [
     status: "todo",
     category: "bug",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1030",
@@ -290,6 +322,7 @@ const tasksData = [
     status: "pending",
     category: "refactor",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1031",
@@ -297,6 +330,7 @@ const tasksData = [
     status: "in progress",
     category: "improvement",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1032",
@@ -304,6 +338,7 @@ const tasksData = [
     status: "todo",
     category: "documentation",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1033",
@@ -311,6 +346,7 @@ const tasksData = [
     status: "completed",
     category: "feature",
     priority: "normal",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1034",
@@ -318,6 +354,7 @@ const tasksData = [
     status: "in progress",
     category: "bug",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1035",
@@ -325,6 +362,7 @@ const tasksData = [
     status: "pending",
     category: "improvement",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1036",
@@ -332,6 +370,7 @@ const tasksData = [
     status: "todo",
     category: "feature",
     priority: "critical",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1037",
@@ -339,6 +378,7 @@ const tasksData = [
     status: "in progress",
     category: "documentation",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1038",
@@ -346,6 +386,7 @@ const tasksData = [
     status: "completed",
     category: "bug",
     priority: "critical",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1039",
@@ -353,6 +394,7 @@ const tasksData = [
     status: "pending",
     category: "refactor",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1040",
@@ -360,6 +402,7 @@ const tasksData = [
     status: "todo",
     category: "feature",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1041",
@@ -367,6 +410,7 @@ const tasksData = [
     status: "pending",
     category: "improvement",
     priority: "important",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1042",
@@ -374,6 +418,7 @@ const tasksData = [
     status: "completed",
     category: "bug",
     priority: "minor",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1043",
@@ -381,6 +426,7 @@ const tasksData = [
     status: "pending",
     category: "documentation",
     priority: "normal",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1044",
@@ -388,6 +434,7 @@ const tasksData = [
     status: "in progress",
     category: "feature",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1045",
@@ -395,6 +442,7 @@ const tasksData = [
     status: "todo",
     category: "refactor",
     priority: "normal",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1046",
@@ -402,6 +450,7 @@ const tasksData = [
     status: "todo",
     category: "bug",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1047",
@@ -409,6 +458,7 @@ const tasksData = [
     status: "pending",
     category: "feature",
     priority: "critical",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1048",
@@ -416,6 +466,7 @@ const tasksData = [
     status: "completed",
     category: "improvement",
     priority: "normal",
+    createdBy: MOCK_UID_A,
   },
   {
     id: "TASK-1049",
@@ -423,6 +474,7 @@ const tasksData = [
     status: "in progress",
     category: "improvement",
     priority: "critical",
+    createdBy: MOCK_UID_B,
   },
   {
     id: "TASK-1050",
@@ -430,7 +482,10 @@ const tasksData = [
     status: "todo",
     category: "bug",
     priority: "important",
+    createdBy: MOCK_UID_A,
   },
 ]
+
+export const MOCK_UID_CURRENT_USER = MOCK_UID_A
 
 export const taskMockData = taskSchema.array().parse(tasksData)

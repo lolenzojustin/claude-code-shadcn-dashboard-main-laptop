@@ -27,6 +27,7 @@ interface DataTableToolbarProps<TData> {
   onAddTask?: (task: Task) => void | Promise<void>
   onSeedTasks?: () => void | Promise<void>
   isSeedingTasks?: boolean
+  currentUserUid?: string
 }
 
 export function DataTableToolbar<TData>({
@@ -34,6 +35,7 @@ export function DataTableToolbar<TData>({
   onAddTask,
   onSeedTasks,
   isSeedingTasks,
+  currentUserUid,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
@@ -198,7 +200,7 @@ export function DataTableToolbar<TData>({
             </span>
           </Button>
           <DataTableViewOptions table={table} />
-          <AddTaskModal onAddTask={onAddTask} />
+          <AddTaskModal onAddTask={onAddTask} currentUserUid={currentUserUid} />
         </div>
       </div>
     </div>

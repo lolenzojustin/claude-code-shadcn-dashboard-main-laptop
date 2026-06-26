@@ -21,11 +21,18 @@ import {
   updateTask,
 } from "@/modules/tasks/services/task-services"
 import type { Task } from "@/modules/tasks/services/types/task-types"
+import { auth } from "@/lib/firebase/client"
 
 export default function TaskPage() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [isSeedingTasks, setIsSeedingTasks] = useState(false)
+  const [currentUserUid, setCurrentUserUid] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    const user = auth.currentUser
+    setCurrentUserUid(user?.uid)
+  }, [])
 
   const refreshTasks = useCallback(async () => {
     const taskList = await getTasks()
@@ -69,11 +76,12 @@ export default function TaskPage() {
       ...task,
       id: `TASK-${Date.now()}`,
       title: `${task.title} (Copy)`,
+      createdBy: currentUserUid,
     }
 
     await createTask(duplicate)
     setTasks((prev) => [duplicate, ...prev])
-  }, [])
+  }, [currentUserUid])
 
   const handleSeedTasks = useCallback(async () => {
     try {
@@ -93,8 +101,9 @@ export default function TaskPage() {
         onUpdateTask: handleUpdateTask,
         onDeleteTask: handleDeleteTask,
         onDuplicateTask: handleDuplicateTask,
+        currentUserUid,
       }),
-    [handleDeleteTask, handleDuplicateTask, handleUpdateTask]
+    [handleDeleteTask, handleDuplicateTask, handleUpdateTask, currentUserUid]
   )
 
   const stats = getTaskStats(tasks)
@@ -243,6 +252,7 @@ export default function TaskPage() {
               onAddTask={handleAddTask}
               onSeedTasks={handleSeedTasks}
               isSeedingTasks={isSeedingTasks}
+              currentUserUid={currentUserUid}
             />
           </CardContent>
         </Card>
