@@ -83,6 +83,20 @@ export const priorities = [
 const MOCK_UID_A = "user-a-001"
 const MOCK_UID_B = "user-b-002"
 
+// reporter assigned per task (alternating for demo visibility)
+const taskReporters = [
+  MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, // 1-5
+  MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, // 6-10
+  MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, // 11-15
+  MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, // 16-20
+  MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, // 21-25
+  MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, // 26-30
+  MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, // 31-35
+  MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, // 36-40
+  MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, // 41-45
+  MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, MOCK_UID_A, MOCK_UID_B, // 46-50
+]
+
 const tasksData = [
   {
     id: "TASK-1001",
@@ -91,6 +105,7 @@ const tasksData = [
     category: "feature",
     priority: "critical",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1002",
@@ -99,6 +114,7 @@ const tasksData = [
     category: "bug",
     priority: "critical",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1003",
@@ -107,6 +123,7 @@ const tasksData = [
     category: "documentation",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1004",
@@ -115,6 +132,7 @@ const tasksData = [
     category: "feature",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1005",
@@ -123,6 +141,7 @@ const tasksData = [
     category: "bug",
     priority: "critical",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1006",
@@ -131,6 +150,7 @@ const tasksData = [
     category: "documentation",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1007",
@@ -139,6 +159,7 @@ const tasksData = [
     category: "improvement",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1008",
@@ -147,6 +168,7 @@ const tasksData = [
     category: "refactor",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1009",
@@ -155,6 +177,7 @@ const tasksData = [
     category: "bug",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1010",
@@ -163,6 +186,7 @@ const tasksData = [
     category: "feature",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1011",
@@ -171,6 +195,7 @@ const tasksData = [
     category: "improvement",
     priority: "critical",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1012",
@@ -179,6 +204,7 @@ const tasksData = [
     category: "documentation",
     priority: "minor",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1013",
@@ -187,6 +213,7 @@ const tasksData = [
     category: "feature",
     priority: "normal",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1014",
@@ -195,6 +222,7 @@ const tasksData = [
     category: "bug",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1015",
@@ -203,6 +231,7 @@ const tasksData = [
     category: "refactor",
     priority: "critical",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1016",
@@ -211,6 +240,7 @@ const tasksData = [
     category: "feature",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1017",
@@ -219,6 +249,7 @@ const tasksData = [
     category: "documentation",
     priority: "normal",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1018",
@@ -227,6 +258,7 @@ const tasksData = [
     category: "bug",
     priority: "minor",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1019",
@@ -235,6 +267,7 @@ const tasksData = [
     category: "improvement",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1020",
@@ -243,6 +276,7 @@ const tasksData = [
     category: "feature",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1021",
@@ -251,6 +285,7 @@ const tasksData = [
     category: "bug",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1022",
@@ -259,6 +294,7 @@ const tasksData = [
     category: "documentation",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1023",
@@ -267,6 +303,7 @@ const tasksData = [
     category: "refactor",
     priority: "normal",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1024",
@@ -275,6 +312,7 @@ const tasksData = [
     category: "feature",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1025",
@@ -283,6 +321,7 @@ const tasksData = [
     category: "bug",
     priority: "critical",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1026",
@@ -291,6 +330,7 @@ const tasksData = [
     category: "improvement",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1027",
@@ -299,6 +339,7 @@ const tasksData = [
     category: "documentation",
     priority: "minor",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1028",
@@ -307,6 +348,7 @@ const tasksData = [
     category: "feature",
     priority: "critical",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1029",
@@ -315,6 +357,7 @@ const tasksData = [
     category: "bug",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1030",
@@ -323,6 +366,7 @@ const tasksData = [
     category: "refactor",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1031",
@@ -331,6 +375,7 @@ const tasksData = [
     category: "improvement",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1032",
@@ -339,6 +384,7 @@ const tasksData = [
     category: "documentation",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1033",
@@ -347,6 +393,7 @@ const tasksData = [
     category: "feature",
     priority: "normal",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1034",
@@ -355,6 +402,7 @@ const tasksData = [
     category: "bug",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1035",
@@ -363,6 +411,7 @@ const tasksData = [
     category: "improvement",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1036",
@@ -371,6 +420,7 @@ const tasksData = [
     category: "feature",
     priority: "critical",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1037",
@@ -379,6 +429,7 @@ const tasksData = [
     category: "documentation",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1038",
@@ -387,6 +438,7 @@ const tasksData = [
     category: "bug",
     priority: "critical",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1039",
@@ -395,6 +447,7 @@ const tasksData = [
     category: "refactor",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1040",
@@ -403,6 +456,7 @@ const tasksData = [
     category: "feature",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1041",
@@ -411,6 +465,7 @@ const tasksData = [
     category: "improvement",
     priority: "important",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1042",
@@ -419,6 +474,7 @@ const tasksData = [
     category: "bug",
     priority: "minor",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1043",
@@ -427,6 +483,7 @@ const tasksData = [
     category: "documentation",
     priority: "normal",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1044",
@@ -435,6 +492,7 @@ const tasksData = [
     category: "feature",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1045",
@@ -443,6 +501,7 @@ const tasksData = [
     category: "refactor",
     priority: "normal",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1046",
@@ -451,6 +510,7 @@ const tasksData = [
     category: "bug",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1047",
@@ -459,6 +519,7 @@ const tasksData = [
     category: "feature",
     priority: "critical",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1048",
@@ -467,6 +528,7 @@ const tasksData = [
     category: "improvement",
     priority: "normal",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
   {
     id: "TASK-1049",
@@ -475,6 +537,7 @@ const tasksData = [
     category: "improvement",
     priority: "critical",
     createdBy: MOCK_UID_B,
+    reporter: MOCK_UID_B,
   },
   {
     id: "TASK-1050",
@@ -483,6 +546,7 @@ const tasksData = [
     category: "bug",
     priority: "important",
     createdBy: MOCK_UID_A,
+    reporter: MOCK_UID_A,
   },
 ]
 

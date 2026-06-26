@@ -86,6 +86,7 @@ export function AddTaskModal({ onAddTask, trigger, currentUserUid }: AddTaskModa
         category: validatedData.category,
         priority: validatedData.priority,
         createdBy: currentUserUid,
+        reporter: currentUserUid,
       }
 
       await onAddTask?.(newTask)

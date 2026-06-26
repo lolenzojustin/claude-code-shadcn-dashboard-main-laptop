@@ -39,6 +39,10 @@ export default function TaskPage() {
     setTasks(taskList)
   }, [])
 
+  const visibleTasks = currentUserUid
+    ? tasks.filter((task) => task.reporter === currentUserUid)
+    : []
+
   useEffect(() => {
     const loadTasks = async () => {
       try {
@@ -77,6 +81,7 @@ export default function TaskPage() {
       id: `TASK-${Date.now()}`,
       title: `${task.title} (Copy)`,
       createdBy: currentUserUid,
+      reporter: currentUserUid,
     }
 
     await createTask(duplicate)
@@ -106,7 +111,7 @@ export default function TaskPage() {
     [handleDeleteTask, handleDuplicateTask, handleUpdateTask, currentUserUid]
   )
 
-  const stats = getTaskStats(tasks)
+  const stats = getTaskStats(visibleTasks)
   const getPercent = (value: number) =>
     stats.total > 0 ? Math.round((value / stats.total) * 100) : 0
 
@@ -247,7 +252,7 @@ export default function TaskPage() {
           </CardHeader>
           <CardContent>
             <DataTable
-              data={tasks}
+              data={visibleTasks}
               columns={taskColumns}
               onAddTask={handleAddTask}
               onSeedTasks={handleSeedTasks}
