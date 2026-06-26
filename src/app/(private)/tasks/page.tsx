@@ -40,7 +40,10 @@ export default function TaskPage() {
   }, [])
 
   const visibleTasks = currentUserUid
-    ? tasks.filter((task) => task.reporter === currentUserUid)
+    ? tasks.filter(
+        (task) =>
+          task.createdBy === currentUserUid || task.reporter === currentUserUid
+      )
     : []
 
   useEffect(() => {
