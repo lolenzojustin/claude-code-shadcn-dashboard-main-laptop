@@ -32,10 +32,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { onAuthStateChanged } from "firebase/auth"
-import { getUserMenus } from "@/modules/rbac/services/rbac-services"
-import { auth } from "@/lib/firebase/client"
+import { useUserRole } from "@/hooks/use-user-role"
 import { MENU_KEYS } from "@/modules/rbac/services/types/rbac-types"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { Loader2 } from "lucide-react"
 
 interface NavMenuItem {
   title: string
@@ -177,35 +178,16 @@ function filterNavGroups(
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session, status } = useSession()
-  const [allowedMenus, setAllowedMenus] = React.useState<string[]>([])
+  const { menus: allowedMenus, roleName, roleId, uid, loading: roleLoading, error: rbacError } = useUserRole()
 
   const user = {
     name:
-      status === "loading"
+      status === "loading" || roleLoading
         ? "Loading..."
         : session?.user?.name || session?.user?.email?.split("@")[0] || "Guest",
     email: session?.user?.email ?? "",
     avatar: session?.user?.image ?? "",
   }
-
-  // Listen to Firebase auth state — fires reliably on mount + every sign-in
-  React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (!firebaseUser) {
-        setAllowedMenus([])
-        return
-      }
-
-      try {
-        const menus = await getUserMenus(firebaseUser.uid)
-        setAllowedMenus(menus)
-      } catch (err) {
-        console.error("Failed to load user role for sidebar:", err)
-      }
-    })
-
-    return () => unsubscribe()
-  }, [])
 
   const visibleNavGroups = filterNavGroups(ALL_NAV_GROUPS, allowedMenus)
 
@@ -241,6 +223,67 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         })}
       </SidebarContent>
       <SidebarFooter>
+        {/* ── RBAC Debug Panel ─────────────────────────────── */}
+        <div className="px-3 py-2 border-t">
+          <div className="text-xs text-muted-foreground mb-1 font-medium">
+            RBAC Debug
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-muted-foreground">UID:</span>
+              <span className="text-[10px] font-mono text-muted-foreground truncate max-w-[140px]">
+                {uid || "(none)"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-muted-foreground">Role:</span>
+              <Badge variant="outline" className="text-[10px] h-4 px-1">
+                {roleLoading ? (
+                  <Loader2 className="w-2.5 h-2.5 animate-spin mr-0.5 inline" />
+                ) : roleName ? (
+                  roleName
+                ) : (
+                  "(no role)"
+                )}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-muted-foreground">RoleId:</span>
+              <span className="text-[10px] font-mono text-muted-foreground">
+                {roleId || "(none)"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-muted-foreground">Menus:</span>
+              <span className="text-[10px] text-muted-foreground">
+                {roleLoading ? (
+                  "..."
+                ) : allowedMenus.length > 0 ? (
+                  allowedMenus.length + " menus"
+                ) : (
+                  "(none)"
+                )}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-0.5 mt-1">
+              {allowedMenus.map((m) => (
+                <span
+                  key={m}
+                  className="text-[9px] bg-primary/10 text-primary px-1 rounded"
+                >
+                  {m}
+                </span>
+              ))}
+              {allowedMenus.length === 0 && !roleLoading && rbacError && (
+                <span className="text-[9px] text-destructive">error loading role</span>
+              )}
+            {allowedMenus.length === 0 && !roleLoading && !rbacError && (
+              <span className="text-[9px] text-destructive">no menus — check Firestore</span>
+            )}
+            </div>
+          </div>
+        </div>
+        <Separator className="my-1" />
         <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>

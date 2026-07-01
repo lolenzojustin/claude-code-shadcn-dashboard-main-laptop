@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper: authenticated ──────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // ── users ─────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+
+    // ── roles ─────────────────────────────────────────────────────────────
+    match /roles/{roleId} {
+      // Everyone can read roles (needed for RBAC menu filtering)
+      allow read: if isAuthenticated();
+      // Only admin — allow write only if needed (seed via app)
+      allow write: if false;
+    }
+
+    // ── user_roles ────────────────────────────────────────────────────────
+    // Doc ID = Firebase UID. Users can only read/write their own document.
+    match /user_roles/{uid} {
+      allow read: if isAuthenticated() && request.auth.uid == uid;
+      allow write: if false; // assign via app / Firebase Console
+    }
+
+    // ── All other collections ───────────────────────────────────────────────
+    match /{collection}/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated(); // tighten per-collection as needed
+    }
+  }
+}
