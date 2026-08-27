@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 import { getMssqlPool } from "@/lib/mssql"
 
@@ -15,7 +15,42 @@ export function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: corsHeaders })
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const expectedToken = process.env.QUERY_API_TOKEN
+
+  if (!expectedToken) {
+    console.error("QUERY_API_TOKEN is not configured")
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "API token is not configured",
+      },
+      {
+        status: 500,
+        headers: corsHeaders,
+      }
+    )
+  }
+
+  const token = request.nextUrl.searchParams.get("token")
+
+  if (!token || token !== expectedToken) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Unauthorized",
+      },
+      {
+        status: 401,
+        headers: {
+          ...corsHeaders,
+          "Cache-Control": "no-store",
+        },
+      }
+    )
+  }
+
   try {
     const pool = await getMssqlPool()
     const result = await pool.request().query(`
